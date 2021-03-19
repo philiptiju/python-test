@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: forstore
+  name: hello-python-service
+spec:
+  selector:
+    app: hello-python
+  ports:
+  - protocol: "TCP"
+    port: 5000
+    targetPort: 5000
+  type: LoadBalancer
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-python
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: 'hello-python'
+      app.kubernetes.io/version: 'v1'
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: 'hello-python'
+        app.kubernetes.io/version: 'v1'
+        app.kubernetes.io/component: 'webapi'
+        app.kubernetes.io/part-of: 'webapi'
+        app.forstore.com/external-facing: 'false'
+        app.forstore.com/source-repository: 'Github.MyDukaanApi'
+    spec:
+      containers:
+      - name: hello-python
+        image: 814632772944.dkr.ecr.ap-south-1.amazonaws.com/hello-python:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
